@@ -119,6 +119,24 @@ ZB_AF_DECLARE_SIMPLE_DESC(simple_desc_ep3, EP_REED_SWITCH, ZB_AF_HA_PROFILE_ID,
     ZB_HA_SIMPLE_SENSOR_DEVICE_ID, 1, 2, 0,
     ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_BINARY_INPUT_BASIC);
 
+ZB_AF_DECLARE_ENDPOINT_DESC(ep1_desc, EP_FULL_OPEN, ZB_AF_HA_PROFILE_ID, 0, NULL,
+    ZB_ZCL_ARRAY_SIZE(ep1_clusters, zb_zcl_cluster_desc_t), ep1_clusters,
+    (zb_af_simple_desc_1_1_t *)&simple_desc_ep1, 0, NULL, 0, NULL);
+
+ZB_AF_DECLARE_ENDPOINT_DESC(ep2_desc, EP_WICKET, ZB_AF_HA_PROFILE_ID, 0, NULL,
+    ZB_ZCL_ARRAY_SIZE(ep2_clusters, zb_zcl_cluster_desc_t), ep2_clusters,
+    (zb_af_simple_desc_1_1_t *)&simple_desc_ep2, 0, NULL, 0, NULL);
+
+ZB_AF_DECLARE_ENDPOINT_DESC(ep3_desc, EP_REED_SWITCH, ZB_AF_HA_PROFILE_ID, 0, NULL,
+    ZB_ZCL_ARRAY_SIZE(ep3_clusters, zb_zcl_cluster_desc_t), ep3_clusters,
+    (zb_af_simple_desc_1_1_t *)&simple_desc_ep3, 0, NULL, 0, NULL);
+
+zb_af_endpoint_desc_t *gate_ep_list[] = { &ep1_desc, &ep2_desc, &ep3_desc };
+zb_af_device_ctx_t gate_ctx = {
+    3,
+    gate_ep_list
+};
+
 
 /* --- Отложенные задачи (Workqueues) --- */
 
