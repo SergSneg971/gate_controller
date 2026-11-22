@@ -40,11 +40,15 @@ typedef struct {
     zb_uint8_t app_version;
     zb_uint8_t stack_version;
     zb_uint8_t hw_version;
-    zb_char_t mf_name[32];
-    zb_char_t model_id[32];
-    zb_char_t date_code[16];
+    zb_char_t mf_name;
+    zb_char_t model_id;
+    zb_char_t date_code;
     zb_uint8_t power_source;
+    zb_uint8_t location_id;
+    zb_uint8_t ph_env;
+    zb_char_t sw_build_id;
 } basic_attr_t;
+
 
 typedef struct {
     zb_uint16_t identify_time;
@@ -67,7 +71,7 @@ static on_off_attr_t relay2_on_off_attr;
 static binary_input_attr_t reed_bi_attr;
 
 /* Декларация кластеров ZCL */
-ZB_ZCL_DECLARE_BASIC_ATTRIB_LIST(basic_attr_list,
+ZB_ZCL_DECLARE_BASIC_ATTRIB_LIST_EXT(basic_attr_list,
     &dev_basic_attr.zcl_version,
     &dev_basic_attr.app_version,
     &dev_basic_attr.stack_version,
@@ -75,7 +79,10 @@ ZB_ZCL_DECLARE_BASIC_ATTRIB_LIST(basic_attr_list,
     dev_basic_attr.mf_name,
     dev_basic_attr.model_id,
     dev_basic_attr.date_code,
-    &dev_basic_attr.power_source);
+    &dev_basic_attr.power_source,
+    dev_basic_attr.location_id,
+    &dev_basic_attr.ph_env,
+    dev_basic_attr.sw_build_id);
 
 
 ZB_ZCL_DECLARE_IDENTIFY_ATTRIB_LIST(identify_attr_list, &dev_identify_attr.identify_time);
