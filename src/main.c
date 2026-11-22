@@ -282,6 +282,7 @@ static void init_clusters_attr(void)
     simple_desc_ep3.app_cluster_list[0] = ZB_ZCL_CLUSTER_ID_IDENTIFY;
     simple_desc_ep3.app_cluster_list[1] = ZB_ZCL_CLUSTER_ID_BINARY_INPUT_BASIC;
 
+
     /* Дальше ваш прежний код init_clusters_attr() без изменений */
    
 
@@ -300,7 +301,7 @@ static void init_clusters_attr(void)
     reed_bi_attr.out_of_service = ZB_FALSE;
     reed_bi_attr.present_value = ZB_FALSE;
     reed_bi_attr.status_flags = 0;
-}
+} /* <--- ВОТ ЭТА ЗАКРЫВАЮЩАЯ СКОБКА БЫЛА ПРОПУЩЕНА */
 
 int main(void)
 {
