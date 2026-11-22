@@ -1,0 +1,35 @@
+/ {
+    aliases {
+        led0 = &blue_led;
+        sw0 = &pair_btn;
+        relay-full = &relay_1;
+        relay-wicket = &relay_2;
+        reed-switch = &reed_1;
+    };
+
+    leds {
+        compatible = "gpio-leds";
+        blue_led: led_0 {
+            gpios = <&gpio0 15 GPIO_ACTIVE_HIGH>;
+        };
+        /* Поменяйте на GPIO_ACTIVE_LOW, если реле срабатывает от нуля */
+        relay_1: relay_full {
+            gpios = <&gpio0 17 GPIO_ACTIVE_HIGH>;
+        };
+        relay_2: relay_wicket {
+            gpios = <&gpio0 20 GPIO_ACTIVE_HIGH>;
+        };
+    };
+
+    buttons {
+        compatible = "gpio-keys";
+        /* Кнопка сброса/спаривания (P0.13 на GND) */
+        pair_btn: button_0 {
+            gpios = <&gpio0 13 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+        };
+        /* Геркон полного закрытия (P0.22 на GND) */
+        reed_1: reed_closed {
+            gpios = <&gpio0 22 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+        };
+    };
+};
