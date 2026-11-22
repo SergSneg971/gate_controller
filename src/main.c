@@ -257,3 +257,70 @@ static void init_clusters_attr(void)
 
     simple_desc_ep2.endpoint = EP_WICKET;
     simple_desc_ep2.app_profile_id = ZB_AF_HA_PROFILE_ID;
+    simple_desc_ep2.app_device_id = ZB_HA_ON_OFF_OUTPUT_DEVICE_ID;
+    simple_desc_ep2.app_device_version = 1;
+    simple_desc_ep2.reserved = 0;
+    simple_desc_ep2.app_input_cluster_count = 2;
+    simple_desc_ep2.app_output_cluster_count = 0;
+    simple_desc_ep2.app_cluster_list[0] = ZB_ZCL_CLUSTER_ID_IDENTIFY;
+    simple_desc_ep2.app_cluster_list[1] = ZB_ZCL_CLUSTER_ID_ON_OFF;
+
+    simple_desc_ep3.endpoint = EP_REED_SWITCH;
+    simple_desc_ep3.app_profile_id = ZB_AF_HA_PROFILE_ID;
+    simple_desc_ep3.app_device_id = ZB_HA_SIMPLE_SENSOR_DEVICE_ID;
+    simple_desc_ep3.app_device_version = 1;
+    simple_desc_ep3.reserved = 0;
+    simple_desc_ep3.app_input_cluster_count = 2;
+    simple_desc_ep3.app_output_cluster_count = 0;
+    simple_desc_ep3.app_cluster_list[0] = ZB_ZCL_CLUSTER_ID_IDENTIFY;
+    simple_desc_ep3.app_cluster_list[1] = ZB_ZCL_CLUSTER_ID_BINARY_INPUT_BASIC;
+
+    /* Заполнение Basic и начальных значений кластеров */
+    dev_basic_attr.zcl_version = ZB_ZCL_VERSION;
+    dev_basic_attr.app_version = INIT_BASIC_APP_VERSION;
+    dev_basic_attr.stack_version = INIT_BASIC_STACK_VERSION;
+    dev_basic_attr.hw_version = INIT_BASIC_HW_VERSION;
+    ZB_ZCL_SET_STRING_VAL(dev_basic_attr.mf_name, INIT_BASIC_MANUF_NAME, ZB_ZCL_STRING_CONST_SIZE(INIT_BASIC_MANUF_NAME));
+    ZB_ZCL_SET_STRING_VAL(dev_basic_attr.model_id, INIT_BASIC_MODEL_ID, ZB_ZCL_STRING_CONST_SIZE(INIT_BASIC_MODEL_ID));
+    ZB_ZCL_SET_STRING_VAL(dev_basic_attr.date_code, INIT_BASIC_DATE_CODE, ZB_ZCL_STRING_CONST_SIZE(INIT_BASIC_DATE_CODE));
+    dev_basic_attr.power_source = INIT_BASIC_POWER_SOURCE;
+
+    relay1_on_off_attr.on_off = ZB_FALSE;
+    relay2_on_off_attr.on_off = ZB_FALSE;
+
+    reed_bi_attr.out_of_service = ZB_FALSE;
+    reed_bi_attr.present_value = ZB_FALSE;
+    reed_bi_attr.status_flags = 0;
+}
+
+int main(void)
+{
+    /* Инициализация GPIO */
+    gpio_pin_configure_dt(&led_spec, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&relay1_spec, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&relay2_spec, GPIO_OUTPUT_INACTIVE);
+
+    gpio_pin_configure_dt(&btn_spec, GPIO_INPUT);
+    gpio_pin_interrupt_configure_dt(&btn_spec, GPIO_INT_EDGE_BOTH);
+    gpio_init_callback(&btn_cb_data, btn_isr, BIT(btn_spec.pin));
+    gpio_add_callback(btn_spec.port, &btn_cb_data);
+
+    gpio_pin_configure_dt(&reed_spec, GPIO_INPUT);
+    gpio_pin_interrupt_configure_dt(&reed_spec, GPIO_INT_EDGE_BOTH);
+    gpio_init_callback(&reed_cb_data, reed_isr, BIT(reed_spec.pin));
+    gpio_add_callback(reed_spec.port, &reed_cb_data);
+
+    /* Инициализация Zigbee */
+    init_clusters_attr();
+    ZB_ZCL_REGISTER_DEVICE_CB(zcl_device_cb);
+    ZB_AF_REGISTER_DEVICE_CTX(&gate_ctx);
+
+    zigbee_erase_persistent_storage(ZB_FALSE);
+    zb_set_ed_timeout(ED_AGING_TIMEOUT_64MIN);
+    zb_set_keepalive_timeout(ZB_MILLISECONDS_TO_BEACON_INTERVAL(3000));
+
+    zigbee_enable();
+
+    return 0;
+}
+
