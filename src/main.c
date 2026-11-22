@@ -187,10 +187,9 @@ static void relay2_off_handler(struct k_work *work)
 {
     gpio_pin_set_dt(&relay2_spec, 0);
     zb_uint8_t val = ZB_FALSE;
-    zb_zcl_set_attr_val(EP_REED_SWITCH, ZB_ZCL_CLUSTER_ID_BINARY_INPUT,
-                    ZB_ZCL_CLUSTER_SERVER_ROLE, ZB_ZCL_ATTR_BINARY_INPUT_PRESENT_VALUE_ID,
-                    (zb_uint8_t *)&is_open, ZB_FALSE);
-
+    zb_zcl_set_attr_val(EP_WICKET, ZB_ZCL_CLUSTER_ID_ON_OFF,
+                        ZB_ZCL_CLUSTER_SERVER_ROLE, ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID,
+                        &val, ZB_FALSE);
 }
 K_WORK_DELAYABLE_DEFINE(relay2_off_work, relay2_off_handler);
 
@@ -200,10 +199,12 @@ static void reed_work_handler(struct k_work *work)
     int closed = gpio_pin_get_dt(&reed_spec);
     zb_bool_t is_open = (closed == 1) ? ZB_FALSE : ZB_TRUE;
 
-    zb_zcl_set_attr_val(EP_REED_SWITCH, ZB_ZCL_CLUSTER_ID_BINARY_INPUT_BASIC,
+    zb_zcl_set_attr_val(EP_REED_SWITCH, ZB_ZCL_CLUSTER_ID_BINARY_INPUT,
                         ZB_ZCL_CLUSTER_SERVER_ROLE, ZB_ZCL_ATTR_BINARY_INPUT_PRESENT_VALUE_ID,
                         (zb_uint8_t *)&is_open, ZB_FALSE);
 }
+
+
 K_WORK_DELAYABLE_DEFINE(reed_work, reed_work_handler);
 
 /* 4. Сброс привязки Zigbee (Factory Reset) при удержании кнопки 5 сек */
