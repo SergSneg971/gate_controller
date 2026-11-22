@@ -1,0 +1,43 @@
+name: Build SuperMini Gate Controller
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch: # Позволяет запускать сборку вручную кнопкой в GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: nordicplayground/nrfconnect-sdk:v2.7-branch
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup ccache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.ccache
+          key: ${{ runner.os }}-ccache-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-ccache-
+
+      - name: Build firmware (UF2)
+        env:
+          CCACHE_DIR: /tmp/.ccache
+        run: |
+          cd /workdir
+          west build -b adafruit_itsybitsy/nrf52840 "$GITHUB_WORKSPACE" -d "$GITHUB_WORKSPACE/build" -p always -- \
+            -DPM_STATIC_YML_FILE="$GITHUB_WORKSPACE/pm_static.yml" \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+      - name: Upload UF2 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: supermini-gate-controller-uf2
+          path: build/zephyr/zephyr.uf2
+          if-no-files-found: error
