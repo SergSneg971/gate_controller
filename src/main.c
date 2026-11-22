@@ -1,5 +1,8 @@
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(app, LOG_LEVEL_INF);
+
 #include <zboss_api.h>
 #include <zboss_api_addons.h>
 #include <zigbee/zigbee_app_utils.h>
