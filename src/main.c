@@ -116,8 +116,7 @@ typedef ZB_PACKED_PRE struct {
     zb_uint8_t app_input_cluster_count;
     zb_uint8_t app_output_cluster_count;
     zb_uint16_t app_cluster_list[3];
-};
-ZB_PACKED_STRUCT gate_simple_desc_3_t;
+} ZB_PACKED_STRUCT gate_simple_desc_3_t;
 
 typedef ZB_PACKED_PRE struct {
     zb_uint8_t endpoint;
@@ -128,8 +127,7 @@ typedef ZB_PACKED_PRE struct {
     zb_uint8_t app_input_cluster_count;
     zb_uint8_t app_output_cluster_count;
     zb_uint16_t app_cluster_list[2];
-}; 
-ZB_PACKED_STRUCT gate_simple_desc_2_t;
+} ZB_PACKED_STRUCT gate_simple_desc_2_t;
 
 static gate_simple_desc_3_t simple_desc_ep1 = {
     EP_FULL_OPEN, ZB_AF_HA_PROFILE_ID, ZB_HA_ON_OFF_OUTPUT_DEVICE_ID, 1, 0, 3, 0,
