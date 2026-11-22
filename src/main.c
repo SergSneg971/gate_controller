@@ -106,35 +106,19 @@ zb_zcl_cluster_desc_t ep3_clusters[] = {
     ZB_ZCL_CLUSTER_DESC(ZB_ZCL_CLUSTER_ID_BINARY_INPUT_BASIC, ZB_ZCL_ARRAY_SIZE(bi_attr_list, zb_zcl_attr_t), bi_attr_list, ZB_ZCL_CLUSTER_SERVER_ROLE, ZB_ZCL_MANUF_CODE_INVALID),
 };
 
-/* Дескрипторы эндпоинтов */
-ZB_AF_SIMPLE_DESC_TYPE(3, 0) simple_desc_ep1 = {
-    EP_FULL_OPEN, ZB_AF_HA_PROFILE_ID, ZB_HA_ON_OFF_OUTPUT_DEVICE_ID, 1, 0, 3, 0,
-    ZB_ZCL_CLUSTER_ID_BASIC, ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_ON_OFF
-};
+/* Дескрипторы эндпоинтов (через официальный макрос ZBOSS) */
+ZB_AF_DECLARE_SIMPLE_DESC(simple_desc_ep1, EP_FULL_OPEN, ZB_AF_HA_PROFILE_ID,
+    ZB_HA_ON_OFF_OUTPUT_DEVICE_ID, 1, 3, 0,
+    ZB_ZCL_CLUSTER_ID_BASIC, ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_ON_OFF);
 
-ZB_AF_SIMPLE_DESC_TYPE(2, 0) simple_desc_ep2 = {
-    EP_WICKET, ZB_AF_HA_PROFILE_ID, ZB_HA_ON_OFF_OUTPUT_DEVICE_ID, 1, 0, 2, 0,
-    ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_ON_OFF
-};
+ZB_AF_DECLARE_SIMPLE_DESC(simple_desc_ep2, EP_WICKET, ZB_AF_HA_PROFILE_ID,
+    ZB_HA_ON_OFF_OUTPUT_DEVICE_ID, 1, 2, 0,
+    ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_ON_OFF);
 
-ZB_AF_SIMPLE_DESC_TYPE(2, 0) simple_desc_ep3 = {
-    EP_REED_SWITCH, ZB_AF_HA_PROFILE_ID, ZB_HA_SIMPLE_SENSOR_DEVICE_ID, 1, 0, 2, 0,
-    ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_BINARY_INPUT_BASIC
-};
+ZB_AF_DECLARE_SIMPLE_DESC(simple_desc_ep3, EP_REED_SWITCH, ZB_AF_HA_PROFILE_ID,
+    ZB_HA_SIMPLE_SENSOR_DEVICE_ID, 1, 2, 0,
+    ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_BINARY_INPUT_BASIC);
 
-ZB_AF_DECLARE_ENDPOINT_DESC(ep1_desc, EP_FULL_OPEN, ZB_AF_HA_PROFILE_ID, 0, NULL,
-    ZB_ZCL_ARRAY_SIZE(ep1_clusters, zb_zcl_cluster_desc_t), ep1_clusters,
-    (zb_af_simple_desc_1_1_t *)&simple_desc_ep1, 0, NULL, 0, NULL);
-
-ZB_AF_DECLARE_ENDPOINT_DESC(ep2_desc, EP_WICKET, ZB_AF_HA_PROFILE_ID, 0, NULL,
-    ZB_ZCL_ARRAY_SIZE(ep2_clusters, zb_zcl_cluster_desc_t), ep2_clusters,
-    (zb_af_simple_desc_1_1_t *)&simple_desc_ep2, 0, NULL, 0, NULL);
-
-ZB_AF_DECLARE_ENDPOINT_DESC(ep3_desc, EP_REED_SWITCH, ZB_AF_HA_PROFILE_ID, 0, NULL,
-    ZB_ZCL_ARRAY_SIZE(ep3_clusters, zb_zcl_cluster_desc_t), ep3_clusters,
-    (zb_af_simple_desc_1_1_t *)&simple_desc_ep3, 0, NULL, 0, NULL);
-
-ZBOSS_DECLARE_DEVICE_CTX_3_EP(gate_ctx, ep1_desc, ep2_desc, ep3_desc);
 
 /* --- Отложенные задачи (Workqueues) --- */
 
