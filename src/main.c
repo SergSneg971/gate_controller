@@ -107,27 +107,31 @@ zb_zcl_cluster_desc_t ep3_clusters[] = {
 };
 
 /* Дескрипторы эндпоинтов */
-ZB_AF_SIMPLE_DESC_TYPE(3, 0) simple_desc_ep1;
-ZB_AF_SIMPLE_DESC_TYPE(2, 0) simple_desc_ep2;
-ZB_AF_SIMPLE_DESC_TYPE(2, 0) simple_desc_ep3;
+/* Дескрипторы эндпоинтов (макрос сам создаёт переменные simple_desc_ep1_desc и т.д.) */
+ZB_AF_DECLARE_SIMPLE_DESC(3, 0, ep1_desc, EP_FULL_OPEN, ZB_AF_HA_PROFILE_ID,
+    ZB_HA_ON_OFF_OUTPUT_DEVICE_ID, 1,
+    ZB_ZCL_CLUSTER_ID_BASIC, ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_ON_OFF);
+
+ZB_AF_DECLARE_SIMPLE_DESC(2, 0, ep2_desc, EP_WICKET, ZB_AF_HA_PROFILE_ID,
+    ZB_HA_ON_OFF_OUTPUT_DEVICE_ID, 1,
+    ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_ON_OFF);
+
+ZB_AF_DECLARE_SIMPLE_DESC(2, 0, ep3_desc, EP_REED_SWITCH, ZB_AF_HA_PROFILE_ID,
+    ZB_HA_SIMPLE_SENSOR_DEVICE_ID, 1,
+    ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_BINARY_INPUT_BASIC);
 
 ZB_AF_DECLARE_ENDPOINT_DESC(ep1_desc, EP_FULL_OPEN, ZB_AF_HA_PROFILE_ID, 0, NULL,
     ZB_ZCL_ARRAY_SIZE(ep1_clusters, zb_zcl_cluster_desc_t), ep1_clusters,
-    (zb_af_simple_desc_1_1_t *)&simple_desc_ep1, 0, NULL, 0, NULL);
+    (zb_af_simple_desc_1_1_t *)&simple_desc_ep1_desc, 0, NULL, 0, NULL);
 
 ZB_AF_DECLARE_ENDPOINT_DESC(ep2_desc, EP_WICKET, ZB_AF_HA_PROFILE_ID, 0, NULL,
     ZB_ZCL_ARRAY_SIZE(ep2_clusters, zb_zcl_cluster_desc_t), ep2_clusters,
-    (zb_af_simple_desc_1_1_t *)&simple_desc_ep2, 0, NULL, 0, NULL);
+    (zb_af_simple_desc_1_1_t *)&simple_desc_ep2_desc, 0, NULL, 0, NULL);
 
 ZB_AF_DECLARE_ENDPOINT_DESC(ep3_desc, EP_REED_SWITCH, ZB_AF_HA_PROFILE_ID, 0, NULL,
     ZB_ZCL_ARRAY_SIZE(ep3_clusters, zb_zcl_cluster_desc_t), ep3_clusters,
-    (zb_af_simple_desc_1_1_t *)&simple_desc_ep3, 0, NULL, 0, NULL);
+    (zb_af_simple_desc_1_1_t *)&simple_desc_ep3_desc, 0, NULL, 0, NULL);
 
-zb_af_endpoint_desc_t *gate_ep_list[] = { &ep1_desc, &ep2_desc, &ep3_desc };
-zb_af_device_ctx_t gate_ctx = {
-    3,
-    gate_ep_list
-};
 
 /* --- Отложенные задачи (Workqueues) --- */
 
@@ -243,38 +247,6 @@ void zboss_signal_handler(zb_bufid_t bufid)
 
 static void init_clusters_attr(void)
 {
-    /* Заполнение Simple Descriptors */
-    simple_desc_ep1.endpoint = EP_FULL_OPEN;
-    simple_desc_ep1.app_profile_id = ZB_AF_HA_PROFILE_ID;
-    simple_desc_ep1.app_device_id = ZB_HA_ON_OFF_OUTPUT_DEVICE_ID;
-    simple_desc_ep1.app_device_version = 1;
-    simple_desc_ep1.reserved = 0;
-    simple_desc_ep1.app_input_cluster_count = 3;
-    simple_desc_ep1.app_output_cluster_count = 0;
-    simple_desc_ep1.app_cluster_list[0] = ZB_ZCL_CLUSTER_ID_BASIC;
-    simple_desc_ep1.app_cluster_list[1] = ZB_ZCL_CLUSTER_ID_IDENTIFY;
-    simple_desc_ep1.app_cluster_list[2] = ZB_ZCL_CLUSTER_ID_ON_OFF;
-
-    simple_desc_ep2.endpoint = EP_WICKET;
-    simple_desc_ep2.app_profile_id = ZB_AF_HA_PROFILE_ID;
-    simple_desc_ep2.app_device_id = ZB_HA_ON_OFF_OUTPUT_DEVICE_ID;
-    simple_desc_ep2.app_device_version = 1;
-    simple_desc_ep2.reserved = 0;
-    simple_desc_ep2.app_input_cluster_count = 2;
-    simple_desc_ep2.app_output_cluster_count = 0;
-    simple_desc_ep2.app_cluster_list[0] = ZB_ZCL_CLUSTER_ID_IDENTIFY;
-    simple_desc_ep2.app_cluster_list[1] = ZB_ZCL_CLUSTER_ID_ON_OFF;
-
-    simple_desc_ep3.endpoint = EP_REED_SWITCH;
-    simple_desc_ep3.app_profile_id = ZB_AF_HA_PROFILE_ID;
-    simple_desc_ep3.app_device_id = ZB_HA_SIMPLE_SENSOR_DEVICE_ID;
-    simple_desc_ep3.app_device_version = 1;
-    simple_desc_ep3.reserved = 0;
-    simple_desc_ep3.app_input_cluster_count = 2;
-    simple_desc_ep3.app_output_cluster_count = 0;
-    simple_desc_ep3.app_cluster_list[0] = ZB_ZCL_CLUSTER_ID_IDENTIFY;
-    simple_desc_ep3.app_cluster_list[1] = ZB_ZCL_CLUSTER_ID_BINARY_INPUT_BASIC;
-
     /* Заполнение Basic и начальных значений кластеров */
     dev_basic_attr.zcl_version = ZB_ZCL_VERSION;
     dev_basic_attr.app_version = INIT_BASIC_APP_VERSION;
@@ -292,6 +264,7 @@ static void init_clusters_attr(void)
     reed_bi_attr.present_value = ZB_FALSE;
     reed_bi_attr.status_flags = 0;
 }
+
 
 int main(void)
 {
