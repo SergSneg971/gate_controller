@@ -248,6 +248,43 @@ void zboss_signal_handler(zb_bufid_t bufid)
 
 static void init_clusters_attr(void)
 {
+    static void init_clusters_attr(void)
+{
+    /* Заполнение Simple Descriptors без предупреждений компилятора */
+    simple_desc_ep1.endpoint = EP_FULL_OPEN;
+    simple_desc_ep1.app_profile_id = ZB_AF_HA_PROFILE_ID;
+    simple_desc_ep1.app_device_id = ZB_HA_ON_OFF_OUTPUT_DEVICE_ID;
+    simple_desc_ep1.app_device_version = 1;
+    simple_desc_ep1.reserved = 0;
+    simple_desc_ep1.app_input_cluster_count = 3;
+    simple_desc_ep1.app_output_cluster_count = 0;
+    simple_desc_ep1.app_cluster_list[0] = ZB_ZCL_CLUSTER_ID_BASIC;
+    simple_desc_ep1.app_cluster_list[1] = ZB_ZCL_CLUSTER_ID_IDENTIFY;
+    simple_desc_ep1.app_cluster_list[2] = ZB_ZCL_CLUSTER_ID_ON_OFF;
+
+    simple_desc_ep2.endpoint = EP_WICKET;
+    simple_desc_ep2.app_profile_id = ZB_AF_HA_PROFILE_ID;
+    simple_desc_ep2.app_device_id = ZB_HA_ON_OFF_OUTPUT_DEVICE_ID;
+    simple_desc_ep2.app_device_version = 1;
+    simple_desc_ep2.reserved = 0;
+    simple_desc_ep2.app_input_cluster_count = 2;
+    simple_desc_ep2.app_output_cluster_count = 0;
+    simple_desc_ep2.app_cluster_list[0] = ZB_ZCL_CLUSTER_ID_IDENTIFY;
+    simple_desc_ep2.app_cluster_list[1] = ZB_ZCL_CLUSTER_ID_ON_OFF;
+
+    simple_desc_ep3.endpoint = EP_REED_SWITCH;
+    simple_desc_ep3.app_profile_id = ZB_AF_HA_PROFILE_ID;
+    simple_desc_ep3.app_device_id = ZB_HA_SIMPLE_SENSOR_DEVICE_ID;
+    simple_desc_ep3.app_device_version = 1;
+    simple_desc_ep3.reserved = 0;
+    simple_desc_ep3.app_input_cluster_count = 2;
+    simple_desc_ep3.app_output_cluster_count = 0;
+    simple_desc_ep3.app_cluster_list[0] = ZB_ZCL_CLUSTER_ID_IDENTIFY;
+    simple_desc_ep3.app_cluster_list[1] = ZB_ZCL_CLUSTER_ID_BINARY_INPUT_BASIC;
+
+    /* Дальше ваш прежний код init_clusters_attr() без изменений */
+   
+
     dev_basic_attr.zcl_version = ZB_ZCL_VERSION;
     dev_basic_attr.app_version = INIT_BASIC_APP_VERSION;
     dev_basic_attr.stack_version = INIT_BASIC_STACK_VERSION;
