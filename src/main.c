@@ -33,6 +33,7 @@ static const struct gpio_dt_spec reed_spec = GPIO_DT_SPEC_GET(DT_ALIAS(reed_swit
 static struct gpio_callback btn_cb_data;
 static struct gpio_callback reed_cb_data;
 
+
 /* Контексты атрибутов ZCL */
 typedef struct {
     zb_uint8_t zcl_version;
@@ -43,8 +44,6 @@ typedef struct {
     zb_char_t model_id[32];
     zb_char_t date_code[16];
     zb_uint8_t power_source;
-    zb_uint8_t location_id[17];
-    zb_uint8_t ph_env;
 } basic_attr_t;
 
 typedef struct {
@@ -68,7 +67,7 @@ static on_off_attr_t relay2_on_off_attr;
 static binary_input_attr_t reed_bi_attr;
 
 /* Декларация кластеров ZCL */
-ZB_ZCL_DECLARE_BASIC_ATTRIB_LIST_EXT(basic_attr_list,
+ZB_ZCL_DECLARE_BASIC_ATTRIB_LIST(basic_attr_list,
     &dev_basic_attr.zcl_version,
     &dev_basic_attr.app_version,
     &dev_basic_attr.stack_version,
@@ -76,9 +75,8 @@ ZB_ZCL_DECLARE_BASIC_ATTRIB_LIST_EXT(basic_attr_list,
     dev_basic_attr.mf_name,
     dev_basic_attr.model_id,
     dev_basic_attr.date_code,
-    &dev_basic_attr.power_source,
-    dev_basic_attr.location_id,
-    &dev_basic_attr.ph_env);
+    &dev_basic_attr.power_source);
+
 
 ZB_ZCL_DECLARE_IDENTIFY_ATTRIB_LIST(identify_attr_list, &dev_identify_attr.identify_time);
 ZB_ZCL_DECLARE_ON_OFF_ATTRIB_LIST(on_off_attr_list_1, &relay1_on_off_attr.on_off);
@@ -118,7 +116,8 @@ typedef ZB_PACKED_PRE struct {
     zb_uint8_t app_input_cluster_count;
     zb_uint8_t app_output_cluster_count;
     zb_uint16_t app_cluster_list[3];
-} ZB_PACKED_STRUCT gate_simple_desc_3_t;
+};
+ZB_PACKED_STRUCT gate_simple_desc_3_t;
 
 typedef ZB_PACKED_PRE struct {
     zb_uint8_t endpoint;
@@ -129,12 +128,13 @@ typedef ZB_PACKED_PRE struct {
     zb_uint8_t app_input_cluster_count;
     zb_uint8_t app_output_cluster_count;
     zb_uint16_t app_cluster_list[2];
-} ZB_PACKED_STRUCT gate_simple_desc_2_t;
+}; 
+ZB_PACKED_STRUCT gate_simple_desc_2_t;
 
 static gate_simple_desc_3_t simple_desc_ep1 = {
     EP_FULL_OPEN, ZB_AF_HA_PROFILE_ID, ZB_HA_ON_OFF_OUTPUT_DEVICE_ID, 1, 0, 3, 0,
     { ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_BINARY_INPUT }
- }
+ 
 };
 
 static gate_simple_desc_2_t simple_desc_ep2 = {
