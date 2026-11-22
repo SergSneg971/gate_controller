@@ -107,35 +107,63 @@ zb_zcl_cluster_desc_t ep3_clusters[] = {
 };
 
 /* Дескрипторы эндпоинтов */
-/* Дескрипторы эндпоинтов (макрос сам создаёт переменные simple_desc_ep1_desc и т.д.) */
-ZB_AF_DECLARE_SIMPLE_DESC(3, 0, ep1_desc, EP_FULL_OPEN, ZB_AF_HA_PROFILE_ID,
-    ZB_HA_ON_OFF_OUTPUT_DEVICE_ID, 1,
-    ZB_ZCL_CLUSTER_ID_BASIC, ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_ON_OFF);
+/* Дескрипторы эндпоинтов (упакованные структуры без зависимости от макросов ZBOSS) */
+typedef ZB_PACKED_PRE struct {
+    zb_uint8_t endpoint;
+    zb_uint16_t app_profile_id;
+    zb_uint16_t app_device_id;
+    zb_bitfield_t app_device_version:4;
+    zb_bitfield_t reserved:4;
+    zb_uint8_t app_input_cluster_count;
+    zb_uint8_t app_output_cluster_count;
+    zb_uint16_t app_cluster_list[3];
+} ZB_PACKED_STRUCT gate_simple_desc_3_t;
 
-ZB_AF_DECLARE_SIMPLE_DESC(2, 0, ep2_desc, EP_WICKET, ZB_AF_HA_PROFILE_ID,
-    ZB_HA_ON_OFF_OUTPUT_DEVICE_ID, 1,
-    ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_ON_OFF);
+typedef ZB_PACKED_PRE struct {
+    zb_uint8_t endpoint;
+    zb_uint16_t app_profile_id;
+    zb_uint16_t app_device_id;
+    zb_bitfield_t app_device_version:4;
+    zb_bitfield_t reserved:4;
+    zb_uint8_t app_input_cluster_count;
+    zb_uint8_t app_output_cluster_count;
+    zb_uint16_t app_cluster_list[2];
+} ZB_PACKED_STRUCT gate_simple_desc_2_t;
 
-ZB_AF_DECLARE_SIMPLE_DESC(2, 0, ep3_desc, EP_REED_SWITCH, ZB_AF_HA_PROFILE_ID,
-    ZB_HA_SIMPLE_SENSOR_DEVICE_ID, 1,
-    ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_BINARY_INPUT_BASIC);
+static gate_simple_desc_3_t simple_desc_ep1 = {
+    EP_FULL_OPEN, ZB_AF_HA_PROFILE_ID, ZB_HA_ON_OFF_OUTPUT_DEVICE_ID, 1, 0, 3, 0,
+    { ZB_ZCL_CLUSTER_ID_BASIC, ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_ON_OFF }
+};
+
+static gate_simple_desc_2_t simple_desc_ep2 = {
+    EP_WICKET, ZB_AF_HA_PROFILE_ID, ZB_HA_ON_OFF_OUTPUT_DEVICE_ID, 1, 0, 2, 0,
+    { ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_ON_OFF }
+};
+
+static gate_simple_desc_2_t simple_desc_ep3 = {
+    EP_REED_SWITCH, ZB_AF_HA_PROFILE_ID, ZB_HA_SIMPLE_SENSOR_DEVICE_ID, 1, 0, 2, 0,
+    { ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_BINARY_INPUT_BASIC }
+};
 
 ZB_AF_DECLARE_ENDPOINT_DESC(ep1_desc, EP_FULL_OPEN, ZB_AF_HA_PROFILE_ID, 0, NULL,
     ZB_ZCL_ARRAY_SIZE(ep1_clusters, zb_zcl_cluster_desc_t), ep1_clusters,
-    (zb_af_simple_desc_1_1_t *)&simple_desc_ep1_desc, 0, NULL, 0, NULL);
+    (zb_af_simple_desc_1_1_t *)&simple_desc_ep1, 0, NULL, 0, NULL);
 
 ZB_AF_DECLARE_ENDPOINT_DESC(ep2_desc, EP_WICKET, ZB_AF_HA_PROFILE_ID, 0, NULL,
     ZB_ZCL_ARRAY_SIZE(ep2_clusters, zb_zcl_cluster_desc_t), ep2_clusters,
-    (zb_af_simple_desc_1_1_t *)&simple_desc_ep2_desc, 0, NULL, 0, NULL);
+    (zb_af_simple_desc_1_1_t *)&simple_desc_ep2, 0, NULL, 0, NULL);
 
 ZB_AF_DECLARE_ENDPOINT_DESC(ep3_desc, EP_REED_SWITCH, ZB_AF_HA_PROFILE_ID, 0, NULL,
     ZB_ZCL_ARRAY_SIZE(ep3_clusters, zb_zcl_cluster_desc_t), ep3_clusters,
-    (zb_af_simple_desc_1_1_t *)&simple_desc_ep3_desc, 0, NULL, 0, NULL);
-    zb_af_endpoint_desc_t *gate_ep_list[] = { &ep1_desc, &ep2_desc, &ep3_desc };
-    zb_af_device_ctx_t gate_ctx = {
+    (zb_af_simple_desc_1_1_t *)&simple_desc_ep3, 0, NULL, 0, NULL);
+
+zb_af_endpoint_desc_t *gate_ep_list[] = { &ep1_desc, &ep2_desc, &ep3_desc };
+zb_af_device_ctx_t gate_ctx = {
     3,
-       gate_ep_list
+    gate_ep_list
 };
+
+
 
 
 
