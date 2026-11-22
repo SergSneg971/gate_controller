@@ -29,11 +29,23 @@ jobs:
         env:
           CCACHE_DIR: /tmp/.ccache
         run: |
+          # Добавляем возможные пути расположения west и тулчейна в PATH
+          export PATH="/opt/ncs/toolchains/default/bin:/root/.local/bin:$PATH"
+          
+          # Если в образе есть скрипт инициализации Zephyr/NCS, подключаем его
+          if [ -f /workdir/zephyr/zephyr-env.sh ]; then
+            source /workdir/zephyr/zephyr-env.sh
+          fi
+
+          # Проверяем, где находится west (поможет при отладке, если путь нестандартный)
+          which west || find / -name west 2>/dev/null
+
           cd /workdir
           west build -b adafruit_itsybitsy/nrf52840 "$GITHUB_WORKSPACE" -d "$GITHUB_WORKSPACE/build" -p always -- \
             -DPM_STATIC_YML_FILE="$GITHUB_WORKSPACE/pm_static.yml" \
             -DCMAKE_C_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
 
       - name: Upload UF2 artifact
         uses: actions/upload-artifact@v4
