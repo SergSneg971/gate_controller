@@ -40,13 +40,13 @@ typedef struct {
     zb_uint8_t app_version;
     zb_uint8_t stack_version;
     zb_uint8_t hw_version;
-    zb_char_t mf_name;
-    zb_char_t model_id;
-    zb_char_t date_code;
+    zb_char_t mf_name[32];
+    zb_char_t model_id[32];
+    zb_char_t date_code[32];
     zb_uint8_t power_source;
-    zb_uint8_t location_id;
+    zb_uint8_t location_id[17];
     zb_uint8_t ph_env;
-    zb_char_t sw_build_id;
+    zb_char_t sw_build_id[17];
 } basic_attr_t;
 
 
