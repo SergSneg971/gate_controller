@@ -103,7 +103,8 @@ zb_zcl_cluster_desc_t ep2_clusters[] = {
 
 zb_zcl_cluster_desc_t ep3_clusters[] = {
     ZB_ZCL_CLUSTER_DESC(ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_ARRAY_SIZE(identify_attr_list, zb_zcl_attr_t), identify_attr_list, ZB_ZCL_CLUSTER_SERVER_ROLE, ZB_ZCL_MANUF_CODE_INVALID),
-    ZB_ZCL_CLUSTER_DESC(ZB_ZCL_CLUSTER_ID_BINARY_INPUT_BASIC, ZB_ZCL_ARRAY_SIZE(bi_attr_list, zb_zcl_attr_t), bi_attr_list, ZB_ZCL_CLUSTER_SERVER_ROLE, ZB_ZCL_MANUF_CODE_INVALID),
+    ZB_ZCL_CLUSTER_DESC(ZB_ZCL_CLUSTER_ID_BINARY_INPUT, ZB_ZCL_ARRAY_SIZE(bi_attr_list, zb_zcl_attr_t), bi_attr_list, ZB_ZCL_CLUSTER_SERVER_ROLE, ZB_ZCL_MANUF_CODE_INVALID),
+
 };
 
 /* Дескрипторы эндпоинтов */
@@ -132,7 +133,8 @@ typedef ZB_PACKED_PRE struct {
 
 static gate_simple_desc_3_t simple_desc_ep1 = {
     EP_FULL_OPEN, ZB_AF_HA_PROFILE_ID, ZB_HA_ON_OFF_OUTPUT_DEVICE_ID, 1, 0, 3, 0,
-    { ZB_ZCL_CLUSTER_ID_BASIC, ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_ON_OFF }
+    { ZB_ZCL_CLUSTER_ID_IDENTIFY, ZB_ZCL_CLUSTER_ID_BINARY_INPUT }
+ }
 };
 
 static gate_simple_desc_2_t simple_desc_ep2 = {
@@ -185,9 +187,10 @@ static void relay2_off_handler(struct k_work *work)
 {
     gpio_pin_set_dt(&relay2_spec, 0);
     zb_uint8_t val = ZB_FALSE;
-    zb_zcl_set_attr_val(EP_WICKET, ZB_ZCL_CLUSTER_ID_ON_OFF,
-                        ZB_ZCL_CLUSTER_SERVER_ROLE, ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID,
-                        &val, ZB_FALSE);
+    zb_zcl_set_attr_val(EP_REED_SWITCH, ZB_ZCL_CLUSTER_ID_BINARY_INPUT,
+                    ZB_ZCL_CLUSTER_SERVER_ROLE, ZB_ZCL_ATTR_BINARY_INPUT_PRESENT_VALUE_ID,
+                    (zb_uint8_t *)&is_open, ZB_FALSE);
+
 }
 K_WORK_DELAYABLE_DEFINE(relay2_off_work, relay2_off_handler);
 
