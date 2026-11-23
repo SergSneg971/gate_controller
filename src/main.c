@@ -255,3 +255,118 @@ static void zcl_device_cb(zb_bufid_t bufid)
             zb_uint8_t ep = p_device_cb_param->endpoint;
 
             if (value == ZB_TRUE) {
+                if (ep == EP_FULL_OPEN) {
+                    gpio_pin_set_dt(&relay1_spec, 1);
+                    k_work_reschedule(&relay1_off_work, K_MSEC(500));
+                } else if (ep == EP_WICKET) {
+                    gpio_pin_set_dt(&relay2_spec, 1);
+                    k_work_reschedule(&relay2_off_work, K_MSEC(500));
+                }
+            }
+        }
+    }
+    p_device_cb_param->status = RET_OK;
+}
+
+/* Обработчик событий стека Zigbee */
+void zboss_signal_handler(zb_bufid_t bufid)
+{
+    zb_zdo_app_signal_hdr_t *p_sg_p = NULL;
+    zb_zdo_app_signal_type_t sig = zb_get_app_signal(bufid, &p_sg_p);
+    zb_ret_t status = ZB_GET_APP_SIGNAL_STATUS(bufid);
+
+    switch (sig) {
+    case ZB_BDB_SIGNAL_DEVICE_FIRST_START:
+    case ZB_BDB_SIGNAL_DEVICE_REBOOT:
+        if (status == RET_OK) {
+            is_joined = true;
+            k_work_cancel_delayable(&led_blink_work);
+            gpio_pin_set_dt(&led_spec, 1);
+            k_work_reschedule(&reed_work, K_SECONDS(3));
+        } else {
+            is_joined = false;
+            k_work_reschedule(&led_blink_work, K_NO_WAIT);
+            bdb_start_top_level_commissioning(ZB_BDB_NETWORK_STEERING);
+        }
+        break;
+
+    case ZB_BDB_SIGNAL_STEERING:
+        if (status == RET_OK) {
+            is_joined = true;
+            k_work_cancel_delayable(&led_blink_work);
+            gpio_pin_set_dt(&led_spec, 1);
+            k_work_reschedule(&reed_work, K_SECONDS(3));
+        } else {
+            is_joined = false;
+            k_work_reschedule(&led_blink_work, K_NO_WAIT);
+            bdb_start_top_level_commissioning(ZB_BDB_NETWORK_STEERING);
+        }
+        break;
+
+    default:
+        ZB_ERROR_CHECK(zigbee_default_signal_handler(bufid));
+        break;
+    }
+
+    if (bufid) {
+        zb_buf_free(bufid);
+    }
+}
+
+static void init_clusters_attr(void)
+{
+    dev_basic_attr.zcl_version = ZB_ZCL_VERSION;
+    dev_basic_attr.app_version = INIT_BASIC_APP_VERSION;
+    dev_basic_attr.stack_version = INIT_BASIC_STACK_VERSION;
+    dev_basic_attr.hw_version = INIT_BASIC_HW_VERSION;
+    ZB_ZCL_SET_STRING_VAL(dev_basic_attr.mf_name, INIT_BASIC_MANUF_NAME, ZB_ZCL_STRING_CONST_SIZE(INIT_BASIC_MANUF_NAME));
+    ZB_ZCL_SET_STRING_VAL(dev_basic_attr.model_id, INIT_BASIC_MODEL_ID, ZB_ZCL_STRING_CONST_SIZE(INIT_BASIC_MODEL_ID));
+    ZB_ZCL_SET_STRING_VAL(dev_basic_attr.date_code, INIT_BASIC_DATE_CODE, ZB_ZCL_STRING_CONST_SIZE(INIT_BASIC_DATE_CODE));
+    dev_basic_attr.power_source = INIT_BASIC_POWER_SOURCE;
+
+    relay1_on_off_attr.on_off = ZB_FALSE;
+    relay2_on_off_attr.on_off = ZB_FALSE;
+
+    reed_bi_attr.out_of_service = ZB_FALSE;
+    reed_bi_attr.present_value = ZB_FALSE;
+    reed_bi_attr.status_flags = 0;
+}
+
+int main(void)
+{
+    /* Включаем питание внешнего вывода 3.3V (P0.13) */
+    gpio_pin_configure_dt(&vcc_spec, GPIO_OUTPUT_ACTIVE);
+
+    /* Инициализация LED и реле */
+    gpio_pin_configure_dt(&led_spec, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&relay1_spec, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&relay2_spec, GPIO_OUTPUT_INACTIVE);
+
+    /* Инициализация кнопки и геркона */
+    gpio_pin_configure_dt(&btn_spec, GPIO_INPUT);
+    gpio_pin_interrupt_configure_dt(&btn_spec, GPIO_INT_EDGE_BOTH);
+    gpio_init_callback(&btn_cb_data, btn_isr, BIT(btn_spec.pin));
+    gpio_add_callback(btn_spec.port, &btn_cb_data);
+
+    gpio_pin_configure_dt(&reed_spec, GPIO_INPUT);
+    gpio_pin_interrupt_configure_dt(&reed_spec, GPIO_INT_EDGE_BOTH);
+    gpio_init_callback(&reed_cb_data, reed_isr, BIT(reed_spec.pin));
+    gpio_add_callback(reed_spec.port, &reed_cb_data);
+
+    /* Запускаем мигание до подключения к сети */
+    k_work_reschedule(&led_blink_work, K_NO_WAIT);
+
+    /* Инициализация Zigbee */
+    init_clusters_attr();
+    ZB_ZCL_REGISTER_DEVICE_CB(zcl_device_cb);
+    ZB_AF_REGISTER_DEVICE_CTX(&gate_ctx);
+
+    zigbee_erase_persistent_storage(ZB_FALSE);
+    zb_set_ed_timeout(ED_AGING_TIMEOUT_64MIN);
+    zb_set_keepalive_timeout(ZB_MILLISECONDS_TO_BEACON_INTERVAL(3000));
+
+    zigbee_enable();
+
+    return 0;
+}
+
