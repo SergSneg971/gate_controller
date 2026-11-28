@@ -44,15 +44,7 @@ jobs:
 
           ccache -z
           
-      - name: Inspect Nordic Zigbee Router sample
-        shell: bash
-        run: |
-          echo "=== light_bulb prj.conf ==="
-          cat /workdir/nrf/samples/zigbee/light_bulb/prj.conf
-          echo "=== light_bulb boards ==="
-          ls -la /workdir/nrf/samples/zigbee/light_bulb/boards/ || true
-          echo "=== ncp prj.conf ==="
-          cat /workdir/nrf/samples/zigbee/ncp/prj.conf
+    
 
           
           west build -b adafruit_itsybitsy/nrf52840 "$GITHUB_WORKSPACE" -d build --no-sysbuild -- \
