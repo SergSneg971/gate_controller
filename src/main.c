@@ -394,7 +394,7 @@ int main(void)
 
    
     /* БЫЛО: zigbee_erase_persistent_storage(ZB_FALSE); */
-    zigbee_erase_persistent_storage(ZB_TRUE);
+    zigbee_erase_persistent_storage(ZB_FALSE);
     
 
     zigbee_enable();
