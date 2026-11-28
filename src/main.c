@@ -390,7 +390,9 @@ int main(void)
     ZB_ZCL_REGISTER_DEVICE_CB(zcl_device_cb);
     ZB_AF_REGISTER_DEVICE_CTX(&gate_ctx);
 
-    zigbee_erase_persistent_storage(ZB_FALSE);
+   
+    /* БЫЛО: zigbee_erase_persistent_storage(ZB_FALSE); */
+    zigbee_erase_persistent_storage(ZB_TRUE);
     
 
     zigbee_enable();
