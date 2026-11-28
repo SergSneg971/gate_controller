@@ -270,6 +270,7 @@ static void zcl_device_cb(zb_bufid_t bufid)
     p_device_cb_param->status = RET_OK;
 }
 
+
 /* Обработчик событий стека Zigbee */
 void zboss_signal_handler(zb_bufid_t bufid)
 {
@@ -281,11 +282,7 @@ void zboss_signal_handler(zb_bufid_t bufid)
     case ZB_BDB_SIGNAL_DEVICE_FIRST_START:
     case ZB_BDB_SIGNAL_DEVICE_REBOOT:
         if (status == RET_OK) {
-            is_joined = true;
-            k_work_cancel_delayable(&led_blink_work);
-            gpio_pin_set_dt(&led_spec, 1);
-            k_work_reschedule(&reed_work, K_SECONDS(3));
-        } else {
+            /* Стек инициализирован — запускаем поиск/переподключение к сети */
             is_joined = false;
             k_work_reschedule(&led_blink_work, K_NO_WAIT);
             bdb_start_top_level_commissioning(ZB_BDB_NETWORK_STEERING);
@@ -294,24 +291,28 @@ void zboss_signal_handler(zb_bufid_t bufid)
 
     case ZB_BDB_SIGNAL_STEERING:
         if (status == RET_OK) {
+            /* Успешно подключились к сети Zigbee! */
             is_joined = true;
             k_work_cancel_delayable(&led_blink_work);
             gpio_pin_set_dt(&led_spec, 1);
             k_work_reschedule(&reed_work, K_SECONDS(3));
         } else {
+            /* Сеть не найдена — продолжаем мигать и повторяем поиск через 1 сек */
             is_joined = false;
             k_work_reschedule(&led_blink_work, K_NO_WAIT);
-            bdb_start_top_level_commissioning(ZB_BDB_NETWORK_STEERING);
+            ZB_SCHEDULE_APP_ALARM((zb_callback_t)bdb_start_top_level_commissioning,
+                                  ZB_BDB_NETWORK_STEERING,
+                                  ZB_TIME_ONE_SECOND);
         }
         break;
-     /* --- ДОБАВИТЬ ЭТОТ БЛОК --- */
+
     case ZB_ZDO_SIGNAL_LEAVE:
         if (status == RET_OK) {
             is_joined = false;
             k_work_reschedule(&led_blink_work, K_NO_WAIT);
             bdb_start_top_level_commissioning(ZB_BDB_NETWORK_STEERING);
         }
-        break;     
+        break;
 
     default:
         ZB_ERROR_CHECK(zigbee_default_signal_handler(bufid));
@@ -322,6 +323,7 @@ void zboss_signal_handler(zb_bufid_t bufid)
         zb_buf_free(bufid);
     }
 }
+
 
 static void init_clusters_attr(void)
 {
