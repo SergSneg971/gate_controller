@@ -303,7 +303,7 @@ void zboss_signal_handler(zb_bufid_t bufid)
         }
         break;
      /* --- ДОБАВИТЬ ЭТОТ БЛОК --- */
-    case ZB_BDB_SIGNAL_LEAVE:
+    case ZB_ZDO_SIGNAL_LEAVE:
         if (status == RET_OK) {
             is_joined = false;
             k_work_reschedule(&led_blink_work, K_NO_WAIT);
