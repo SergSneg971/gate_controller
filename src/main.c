@@ -1,5 +1,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/usb/usb_device.h>
+
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app, LOG_LEVEL_INF);
 
@@ -342,6 +344,7 @@ static void init_clusters_attr(void)
 
 int main(void)
 {
+    usb_enable(NULL);
     /* Включаем питание внешнего вывода 3.3V (P0.13) */
     gpio_pin_configure_dt(&vcc_spec, GPIO_OUTPUT_ACTIVE);
 
