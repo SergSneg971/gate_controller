@@ -325,6 +325,12 @@ void zboss_signal_handler(zb_bufid_t bufid)
 
 static void init_clusters_attr(void)
 {
+    memset(&dev_basic_attr, 0, sizeof(dev_basic_attr));
+    memset(&dev_identify_attr, 0, sizeof(dev_identify_attr));
+    memset(&relay1_on_off_attr, 0, sizeof(relay1_on_off_attr));
+    memset(&relay2_on_off_attr, 0, sizeof(relay2_on_off_attr));
+    memset(&reed_bi_attr, 0, sizeof(reed_bi_attr));
+    
     dev_basic_attr.zcl_version = ZB_ZCL_VERSION;
     dev_basic_attr.app_version = INIT_BASIC_APP_VERSION;
     dev_basic_attr.stack_version = INIT_BASIC_STACK_VERSION;
@@ -366,6 +372,9 @@ int main(void)
 
     /* Запускаем мигание до подключения к сети */
      k_work_reschedule(&led_blink_work, K_NO_WAIT);
+      /* Даём 2 секунды визуально увидеть запуск прошивки до старта Zigbee */
+    k_msleep(2000);
+
 
     k_msleep(1500);
     printk("GATE: Starting Zigbee init...\r\n");
