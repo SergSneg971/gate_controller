@@ -43,7 +43,7 @@ jobs:
           source /workdir/zephyr/zephyr-env.sh
 
           ccache -z
-          west build -b adafruit_itsybitsy/nrf52840 "$GITHUB_WORKSPACE" -d build -- \
+          west build -b adafruit_itsybitsy/nrf52840 "$GITHUB_WORKSPACE" -d build --no-sysbuild -- \
             -DPM_STATIC_YML_FILE="$GITHUB_WORKSPACE/pm_static.yml" \
             -DCMAKE_C_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
@@ -53,14 +53,12 @@ jobs:
       - name: Convert HEX to Adafruit UF2
         shell: bash
         run: |
-          HEX_FILE=$(find build -name "zephyr.hex" | head -n 1)
-          echo "Found HEX: $HEX_FILE"
-          python3 /workdir/zephyr/scripts/build/uf2conv.py "$HEX_FILE" -c -f 0xADA52840 -o build/supermini_gate_controller.uf2
+          python3 /workdir/zephyr/scripts/build/uf2conv.py build/zephyr/zephyr.hex -c -f 0xADA52840 -o build/supermini_gate_controller.uf2
 
       - name: Upload Firmware Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: supermini-gate-controller-firmware
           path: |
-            build/**/zephyr.hex
+            build/zephyr/zephyr.hex
             build/supermini_gate_controller.uf2
