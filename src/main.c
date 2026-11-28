@@ -352,10 +352,16 @@ int main(void)
 {
   
     /* Включаем питание внешнего вывода 3.3V (P0.13) */
-    gpio_pin_configure_dt(&vcc_spec, GPIO_OUTPUT_ACTIVE);
+   /* gpio_pin_configure_dt(&vcc_spec, GPIO_OUTPUT_ACTIVE);*/
 
     /* Инициализация LED и реле */
-    gpio_pin_configure_dt(&led_spec, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&led_spec, GPIO_OUTPUT_INACTIVE); 
+    
+       /* Прямое мигание 6 раз (3 секунды) ДО инициализации Zigbee */
+    for (int i = 0; i < 6; i++) {
+        gpio_pin_toggle_dt(&led_spec);
+        k_msleep(500);
+    }
     gpio_pin_configure_dt(&relay1_spec, GPIO_OUTPUT_INACTIVE);
     gpio_pin_configure_dt(&relay2_spec, GPIO_OUTPUT_INACTIVE);
 
