@@ -302,6 +302,14 @@ void zboss_signal_handler(zb_bufid_t bufid)
             bdb_start_top_level_commissioning(ZB_BDB_NETWORK_STEERING);
         }
         break;
+     /* --- ДОБАВИТЬ ЭТОТ БЛОК --- */
+    case ZB_BDB_SIGNAL_LEAVE:
+        if (status == RET_OK) {
+            is_joined = false;
+            k_work_reschedule(&led_blink_work, K_NO_WAIT);
+            bdb_start_top_level_commissioning(ZB_BDB_NETWORK_STEERING);
+        }
+        break;     
 
     default:
         ZB_ERROR_CHECK(zigbee_default_signal_handler(bufid));
@@ -362,8 +370,7 @@ int main(void)
     ZB_AF_REGISTER_DEVICE_CTX(&gate_ctx);
 
     zigbee_erase_persistent_storage(ZB_FALSE);
-    zb_set_ed_timeout(ED_AGING_TIMEOUT_64MIN);
-    zb_set_keepalive_timeout(ZB_MILLISECONDS_TO_BEACON_INTERVAL(3000));
+    
 
     zigbee_enable();
 
