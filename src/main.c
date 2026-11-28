@@ -365,8 +365,11 @@ int main(void)
     gpio_add_callback(reed_spec.port, &reed_cb_data);
 
     /* Запускаем мигание до подключения к сети */
-    k_work_reschedule(&led_blink_work, K_NO_WAIT);
+     k_work_reschedule(&led_blink_work, K_NO_WAIT);
 
+    k_msleep(1500);
+    printk("GATE: Starting Zigbee init...\r\n");
+    
     /* Инициализация Zigbee */
     init_clusters_attr();
     ZB_ZCL_REGISTER_DEVICE_CB(zcl_device_cb);
