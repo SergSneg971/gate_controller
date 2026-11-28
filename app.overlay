@@ -1,4 +1,8 @@
-/ {
+/{
+    chosen {
+        zephyr,console = &cdc_acm_uart0;
+    };
+
     aliases {
         led0 = &blue_led;
         sw0 = &pair_btn;
